@@ -100,7 +100,7 @@ and a live attempt counter.
 Hi! I'm **Mansi**, a B.Tech student interning at **Prodigy InfoTech**
 in the Software Development track. This is **Task 02** of 5.
 
-- 🔗 [Task 01 — Temperature Converter](https://github.com/<your-username>/PRODIGY_SD_01)
+- 🔗 [Task 01 — Temperature Converter](https://github.com/Mansi-028/PRODIGY_SD_01)
 
 ---
 
