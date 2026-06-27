@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guessing Game | Task 02 - Mansi</title>
+  <meta name="description" content="A simple number guessing game built for Prodigy InfoTech Task 02." />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0ea5e9 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #1f2937;
+    }
+    .card {
+      background: #fff; border-radius: 14px; padding: 32px;
+      width: 100%; max-width: 480px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    }
+    .header { text-align: center; margin-bottom: 20px; }
+    .badge {
+      display: inline-block; background: #ecfeff; color: #0e7490;
+      padding: 4px 12px; border-radius: 999px; font-size: 12px;
+      font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
+    }
+    .header h1 { margin: 12px 0 6px; font-size: 26px; color: #111827; }
+    .subtitle { margin: 0; color: #6b7280; font-size: 14px; }
+    .message {
+      background: #f0f9ff; border: 1px solid #bae6fd; color: #0c4a6e;
+      border-radius: 8px; padding: 14px; text-align: center;
+      font-size: 15px; margin-bottom: 18px;
+    }
+    .message.win {
+      background: #ecfdf5; border-color: #a7f3d0; color: #065f46;
+      font-weight: 600;
+    }
+    label {
+      display: block; font-size: 13px; font-weight: 600;
+      color: #374151; margin-bottom: 8px;
+    }
+    input[type="text"] {
+      width: 100%; padding: 12px 14px; font-size: 15px;
+      border: 1px solid #d1d5db; border-radius: 8px;
+      outline: none; box-sizing: border-box;
+      transition: border 0.15s, box-shadow 0.15s;
+    }
+    input[type="text"]:focus {
+      border-color: #0ea5e9;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+    }
+    input[type="text"]:disabled { background: #f9fafb; color: #9ca3af; }
+    .actions { display: flex; gap: 10px; margin-top: 16px; }
+    .btn {
+      flex: 1; padding: 12px; font-size: 14px; font-weight: 600;
+      border-radius: 8px; border: none; cursor: pointer;
+      transition: opacity 0.15s, transform 0.05s;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn.primary { background: #0ea5e9; color: #fff; }
+    .btn.primary:hover:not(:disabled) { background: #0284c7; }
+    .btn.ghost { background: #f3f4f6; color: #374151; }
+    .btn.ghost:hover { background: #e5e7eb; }
+    .error {
+      margin-top: 14px; padding: 10px 12px; background: #fef2f2;
+      color: #b91c1c; border: 1px solid #fecaca;
+      border-radius: 8px; font-size: 14px;
+    }
+    .stats {
+      margin-top: 20px; display: grid;
+      grid-template-columns: repeat(3, 1fr); gap: 10px;
+    }
+    .stat-item {
+      background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;
+      padding: 10px 8px; text-align: center;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .stat-label {
+      font-size: 11px; color: #6b7280;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .stat-value { font-size: 15px; font-weight: 700; color: #111827; }
+    .history { margin-top: 22px; padding-top: 18px; border-top: 1px solid #e5e7eb; }
+    .history h3 { margin: 0 0 10px; font-size: 15px; color: #111827; }
+    .history-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip {
+      padding: 4px 10px; border-radius: 999px;
+      font-size: 13px; font-weight: 600; border: 1px solid transparent;
+    }
+    .chip.high { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+    .chip.low { background: #fffbeb; color: #b45309; border-color: #fde68a; }
+    .chip.correct { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
+    .footer { margin-top: 22px; color: rgba(255,255,255,0.8); font-size: 12px; }
+    @media (max-width: 480px) {
+      .card { padding: 22px; }
+      .stats { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <span class="badge">Task 02</span>
+      <h1>Guessing Game</h1>
+      <p class="subtitle">Guess the secret number between 1 and 100.</p>
+    </div>
+
+    <div id="message" class="message">I picked a number between 1 and 100. Try to guess it!</div>
+
+    <form id="guessForm">
+      <label for="guessInput">Your guess</label>
+      <input type="text" id="guessInput" placeholder="enter a number..." autocomplete="off" />
+      <div class="actions">
+        <button type="submit" id="guessBtn" class="btn primary">Guess</button>
+        <button type="button" id="resetBtn" class="btn ghost">Reset</button>
+      </div>
+    </form>
+
+    <div id="error" class="error" style="display:none;"></div>
+
+    <div class="stats">
+      <div class="stat-item">
+        <span class="stat-label">Attempts</span>
+        <span class="stat-value" id="attempts">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Range</span>
+        <span class="stat-value">1 – 100</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Status</span>
+        <span class="stat-value" id="status">Playing</span>
+      </div>
+    </div>
+
+    <div id="historyBox" class="history" style="display:none;">
+      <h3>Your Guesses</h3>
+      <div id="historyList" class="history-list"></div>
+    </div>
+  </div>
+
+  <footer class="footer">Made by Mansi — Prodigy InfoTech Software Development Internship — Task 02</footer>
+
+  <script>
+    // Task 02 - Guessing Game
+    // Made by Mansi - B.Tech intern @ Prodigy InfoTech
+
+    var MIN_NUM = 1;
+    var MAX_NUM = 100;
+
+    var target = 0;
+    var attempts = 0;
+    var won = false;
+    var history = [];
+
+    var messageEl = document.getElementById("message");
+    var inputEl = document.getElementById("guessInput");
+    var errorEl = document.getElementById("error");
+    var attemptsEl = document.getElementById("attempts");
+    var statusEl = document.getElementById("status");
+    var historyBox = document.getElementById("historyBox");
+    var historyList = document.getElementById("historyList");
+    var guessBtn = document.getElementById("guessBtn");
+    var resetBtn = document.getElementById("resetBtn");
+    var form = document.getElementById("guessForm");
+
+    function getRandomNumber() {
+      return Math.floor(Math.random() * (MAX_NUM - MIN_NUM + 1)) + MIN_NUM;
+    }
+
+    function startNewGame() {
+      target = getRandomNumber();
+      attempts = 0;
+      won = false;
+      history = [];
+      messageEl.textContent = "I picked a number between 1 and 100. Try to guess it!";
+      messageEl.classList.remove("win");
+      inputEl.value = "";
+      inputEl.disabled = false;
+      guessBtn.disabled = false;
+      resetBtn.textContent = "Reset";
+      errorEl.style.display = "none";
+      attemptsEl.textContent = "0";
+      statusEl.textContent = "Playing";
+      historyBox.style.display = "none";
+      historyList.innerHTML = "";
+    }
+
+    function showError(msg) {
+      errorEl.textContent = msg;
+      errorEl.style.display = "block";
+    }
+
+    function addChip(value, hint) {
+      var chip = document.createElement("span");
+      chip.className = "chip " + hint;
+      var arrow = hint === "high" ? " ↓" : hint === "low" ? " ↑" : " ✓";
+      chip.textContent = value + arrow;
+      historyList.appendChild(chip);
+      historyBox.style.display = "block";
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      errorEl.style.display = "none";
+      if (won) return;
+
+      var raw = inputEl.value.trim();
+      if (raw === "") { showError("Please enter your guess first."); return; }
+
+      var value = parseInt(raw, 10);
+      if (isNaN(value)) { showError("Please enter a valid whole number."); return; }
+      if (value < MIN_NUM || value > MAX_NUM) {
+        showError("Number must be between " + MIN_NUM + " and " + MAX_NUM + ".");
+        return;
+      }
+
+      attempts++;
+      attemptsEl.textContent = attempts;
+
+      if (value === target) {
+        messageEl.textContent = "Correct! You got it in " + attempts + " attempt" + (attempts === 1 ? "" : "s") + ".";
+        messageEl.classList.add("win");
+        won = true;
+        inputEl.disabled = true;
+        guessBtn.disabled = true;
+        statusEl.textContent = "Won 🎉";
+        resetBtn.textContent = "Play Again";
+        addChip(value, "correct");
+      } else if (value < target) {
+        messageEl.textContent = "Too low! Try a bigger number.";
+        addChip(value, "low");
+      } else {
+        messageEl.textContent = "Too high! Try a smaller number.";
+        addChip(value, "high");
+      }
+
+      inputEl.value = "";
+      inputEl.focus();
+    });
+
+    resetBtn.addEventListener("click", startNewGame);
+
+    // start a game on first load
+    startNewGame();
+  </script>
+</body>
+</html>
